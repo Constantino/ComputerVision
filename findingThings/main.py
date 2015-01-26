@@ -165,11 +165,6 @@ def drawBox():
         if e[1] > yMax:
             yMax = e[1]
 
-        if e[0] < xMin:
-            xMin = e[0]
-        if e[0] > xMax:
-            xMax = e[0]
-        
     for x in range(xMin,xMax,1):
         img2[x,yMin] = [0,0,255]
         img2[x,yMax] = [0,0,255]
