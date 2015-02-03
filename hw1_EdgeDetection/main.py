@@ -1,8 +1,10 @@
 import cv2
 
-debug = 1
+debug = 0
 
-imagePath = "img/figures.png"
+#imagePath = "img/figures.png"
+imagePath = "img/woman.jpeg"
+
 
 img = cv2.imread(imagePath)
 imgCopy = cv2.imread(imagePath)
@@ -45,10 +47,66 @@ def applyMasks(pixel):
     return maxMasks
 
 
+def getThreshold(histogram):
+
+    t_new = max(histogram)/2.0
+    t_old = 0.0
+    mean = [0,0]
+    while abs(t_old-t_new) > 0.001:
+
+        print "t_new: ",t_new
+
+        mean = getAverages(t_new)
+        t_old = t_new
+        t_new = 0.5*(mean[0]+mean[1])
+        
+    print "returning value"
+    return t_new
+
+def getAverages(t):
+    
+    sum_upper = 0
+    counter_upper = 0
+
+    sum_down = 0
+    counter_down = 0
+    for e in histogram:
+        if e > t:
+            sum_upper += e
+            counter_upper += 1
+        else:
+            sum_down += e
+            counter_down += 1
+
+    return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)]
+
 def main():
-    for y in range(50,70,1):
-        for x in range(50,70,1):
+    for y in range(1,height-1,1):
+        for x in range(1,width-1,1):
             histogram.append( applyMasks([y,x]) )
+
+    T = getThreshold(histogram)
+    print "Threshold: ", T
+
+    index_counter = 0
+    for r in range(1,height-1,1):
+        for c in range(1,width-1,1):
+    
+            print "h[",index_counter,"]: ",histogram[r+c]," > T: ",T
+            if histogram[index_counter] > T:
+                print "gonna print"
+                imgCopy[r,c] = [255,255,255]
+            else:
+                imgCopy[r,c] = [0,0,0]
+
+            index_counter += 1
+
+    #for i in range(30,90):
+    #    imgCopy[50,i] = [0,0,255]
+
+    #print histogram
+
+    cv2.imwrite("img/result.jpg",imgCopy)
 
 
 main()
