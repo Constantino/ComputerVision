@@ -2,7 +2,7 @@ import cv2
 from Tkinter import *
 from tkFileDialog import *
 
-debug = 0
+debug = 1
 
 #Robinson's "5-level" masks
 mask = [ 
@@ -50,13 +50,7 @@ def applyMasks(pixel,img):
         
         pixelGradients.append(gradient)
 
-        if debug:
-            print "-> gradient: ", gradient
-
     maxGradient = max(pixelGradients)
-    
-    if debug:
-        print "-> Return max: ", maxGradient
 
     return maxGradient
 
@@ -68,13 +62,13 @@ def getThreshold(histogram):
     mean = [0,0]
     while abs(t_old-t_new) > 0.001:
 
-        print "t_new: ",t_new
+        if debug:
+            print "-> threshold: ",t_new
 
         mean = getAverages(t_new)
         t_old = t_new
         t_new = 0.5*(mean[0]+mean[1])
-        
-    print "returning value"
+    
     return t_new
 
 def getAverages(t):
@@ -95,20 +89,27 @@ def getAverages(t):
     return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)]
 
 def processImage():
+    
+    if debug:
+        print "-> preprocessing the image"
 
     path = loadFile()
 
     if path == "":
 
         if debug:
-            print "loadFile: --"
+            print "path: -"
 
         return
 
     if debug:
-        print "loadfile: ", fileImg
+        print "-> path: ", path
         
     img,imgCopy,height,width = preProcessImg(path)
+
+    if debug:
+        print "-> height: ",height," width: ",width
+        print "-> applying masks to each pixel"
 
     for y in range(1,height-1,1):
         for x in range(1,width-1,1):
@@ -117,14 +118,11 @@ def processImage():
     T = getThreshold(histogram)
     
     if debug:
-        print "-> Threshold: ", T
+        print "-> showing up borders"
 
     index_counter = 0
     for r in range(1,height-1,1):
         for c in range(1,width-1,1):
-
-            if debug:
-                print "h[",index_counter,"]: ",histogram[r+c]," > T: ",T
 
             if histogram[index_counter] > T:
                 
@@ -136,7 +134,9 @@ def processImage():
             index_counter += 1
 
     cv2.imwrite("img/result.png",imgCopy)
-
+    
+    if debug:
+        print "-> image successfully saved at img/result.png"
 
 def main():
     master = Tk()
