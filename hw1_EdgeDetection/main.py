@@ -1,14 +1,8 @@
 import cv2
+from Tkinter import *
+from tkFileDialog import *
 
 debug = 0
-
-imagePath = "img/figures.png"
-
-img = cv2.imread(imagePath)
-img = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
-imgCopy = img
-
-height, width = img.shape
 
 #Robinson's "5-level" masks
 mask = [ 
@@ -24,7 +18,26 @@ mask = [
 
 histogram = []
 
-def applyMasks(pixel):
+def preProcessImg(imagePath):
+    img = cv2.imread(imagePath)
+    img = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+    imgCopy = img
+    height, width = img.shape
+
+    return img,imgCopy,height,width
+
+def loadFile():
+    fname = ""
+    try:
+        fname = askopenfilename(filetypes=(("JPG", "*.jpg"),
+        ("All files", "*.*")))
+
+    except ValueError:
+        print "Please select an image. Try again..."
+
+    return fname
+
+def applyMasks(pixel,img):
 
     pixelGradients = []
     indexer = [-pixel[0]+1,-pixel[1]+1]
@@ -81,10 +94,25 @@ def getAverages(t):
 
     return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)]
 
-def main():
+def processImage():
+
+    path = loadFile()
+
+    if path == "":
+
+        if debug:
+            print "loadFile: --"
+
+        return
+
+    if debug:
+        print "loadfile: ", fileImg
+        
+    img,imgCopy,height,width = preProcessImg(path)
+
     for y in range(1,height-1,1):
         for x in range(1,width-1,1):
-            histogram.append( applyMasks([y,x]) )
+            histogram.append( applyMasks([y,x],img) )
 
     T = getThreshold(histogram)
     
@@ -107,8 +135,19 @@ def main():
 
             index_counter += 1
 
-    
     cv2.imwrite("img/result.png",imgCopy)
 
+
+def main():
+    master = Tk()
+
+    f = Frame(master, height=300, width=300)
+    f.pack_propagate(0)
+    f.pack()
+
+    b = Button(f, text="Load a picture", command = processImage)
+    b.pack()
+
+    mainloop()
 
 main()
