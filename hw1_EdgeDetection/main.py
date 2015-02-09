@@ -1,8 +1,14 @@
+#!/usr/bin/python
+
 import cv2
 from Tkinter import *
 from tkFileDialog import *
+import sys
 
 debug = 1
+
+if len(sys.argv) > 1:
+    debug = int(sys.argv[1])
 
 #Robinson's "5-level" masks
 mask = [ 
@@ -134,9 +140,9 @@ def processImage():
             index_counter += 1
 
     cv2.imwrite("img/result.png",imgCopy)
-    
-    if debug:
-        print "-> image successfully saved at img/result.png"
+
+    print "-> image successfully saved at img/result.png"
+    print "-> You can choose another image ..."
 
 def main():
     master = Tk()
@@ -148,6 +154,7 @@ def main():
     b = Button(f, text="Load a picture", command = processImage)
     b.pack()
 
+    master.title("Edge detection")
     mainloop()
 
 main()
