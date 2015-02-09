@@ -6,3 +6,8 @@ hw1_EdgeDetection:
 	The resulting image is saved at hw1_EdgeDetection/img/result.png
 
 	You can find some examples of testing at hw1_EdgeDetection/img/testing
+
+	If you want to deactivate the log on terminal execute main.py as:
+	   ./main.py 0
+	   or 
+	   python main.py 0
