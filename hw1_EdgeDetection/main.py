@@ -2,14 +2,13 @@ import cv2
 
 debug = 0
 
-#imagePath = "img/figures.png"
-imagePath = "img/woman.jpeg"
-
+imagePath = "img/figures.png"
 
 img = cv2.imread(imagePath)
-imgCopy = cv2.imread(imagePath)
+img = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+imgCopy = img
 
-height, width, depth = img.shape
+height, width = img.shape
 
 #Robinson's "5-level" masks
 mask = [ 
@@ -27,24 +26,26 @@ histogram = []
 
 def applyMasks(pixel):
 
-    maskBuffer = []
+    pixelGradients = []
     indexer = [-pixel[0]+1,-pixel[1]+1]
+
     for i in range(len(mask)):
-        maskSum = 0
+        gradient = 0
         for r in range(pixel[0]-1, pixel[0]+2):
             for c in range(pixel[1]-1,pixel[1]+2):
-                maskSum += ((int(img[r,c][0])+int(img[r,c][1])+int(img[r,c][2]))/3)*mask[i][r+indexer[0]][c+indexer[1]]
+                gradient += img[r,c]*mask[i][r+indexer[0]][c+indexer[1]]
         
-        maskBuffer.append(maskSum)
-        if debug:
-            print "ms: ", maskSum
+        pixelGradients.append(gradient)
 
-    maxMasks = max(maskBuffer)
+        if debug:
+            print "-> gradient: ", gradient
+
+    maxGradient = max(pixelGradients)
     
     if debug:
-        print "** Return max: ", maxMasks
+        print "-> Return max: ", maxGradient
 
-    return maxMasks
+    return maxGradient
 
 
 def getThreshold(histogram):
@@ -86,27 +87,28 @@ def main():
             histogram.append( applyMasks([y,x]) )
 
     T = getThreshold(histogram)
-    print "Threshold: ", T
+    
+    if debug:
+        print "-> Threshold: ", T
 
     index_counter = 0
     for r in range(1,height-1,1):
         for c in range(1,width-1,1):
-    
-            print "h[",index_counter,"]: ",histogram[r+c]," > T: ",T
+
+            if debug:
+                print "h[",index_counter,"]: ",histogram[r+c]," > T: ",T
+
             if histogram[index_counter] > T:
-                print "gonna print"
-                imgCopy[r,c] = [255,255,255]
+                
+                imgCopy[r,c] = 255
             else:
-                imgCopy[r,c] = [0,0,0]
+                
+                imgCopy[r,c] = 0
 
             index_counter += 1
 
-    #for i in range(30,90):
-    #    imgCopy[50,i] = [0,0,255]
-
-    #print histogram
-
-    cv2.imwrite("img/result.jpg",imgCopy)
+    
+    cv2.imwrite("img/result.png",imgCopy)
 
 
 main()
