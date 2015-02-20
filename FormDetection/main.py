@@ -22,12 +22,6 @@ def getNeighborhood(test,pixel):
 
     return neighborhood
 
-def getRidOfBackground(test,borders):
-    background = applyDFS(borders,False)
-
-    for e in background:
-        test.imgCopy[e] = 80
-
 def isColor(pixel,color):
     print "pixel: ",pixel
     print "color: ",color
@@ -58,6 +52,19 @@ def getBackground(test):
 
     return myBackground['color']
 
+def detectFigures(test,borders,myBackground):
+    figures = []
+    
+    while borders:
+        detected = applyDFS(test,borders,myBackground)
+        figures.append(detected)
+        
+        for i in detected:
+            test.imgCopy[i[0],i[1]] = 100
+            if [i[0],i[1]] in borders:
+                borders.remove([i[0],i[1]])
+        
+    return figures
 
 def applyDFS(test,borders,myBackground):
     visited = []
@@ -116,13 +123,13 @@ def processImage():
     #getRidOfBackground(test,test.border)
 
     
-    figure = applyDFS(test,test.border,myBackground)
-    
+    figure = detectFigures(test,test.border,myBackground)#applyDFS(test,test.border,myBackground)
+    """
     for r in (1,test.height-1,1):
         for c in (1,test.width-1,1):
-            for [r,c] in figure:
+            if [r,c] in figure:
                 test.imgCopy[r,c] = 100
-    
+    """
     #for e in figure:
     #    test.imgCopy[e] = 100
 
