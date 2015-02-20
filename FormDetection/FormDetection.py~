@@ -1,0 +1,43 @@
+import cv2
+from Tkinter import *
+from tkFileDialog import *
+import sys
+from numpy import *
+
+class FormDetection:
+
+    def getNeighborhood(self,pixel):
+        
+        neighborhood = []
+
+        for i in range(pixel[0]-1,pixel[0]+2):
+            for j in range(pixel[1]-1,pixel[1]+2):
+                
+                neighborhood.append([i,j])
+        
+        return neighborhood
+        
+
+    def applyDFS(self):
+        visited = []
+        stack = []
+
+        Point = self.border[0]
+
+        visited.append(Point)
+        stack.append(Point)
+
+        neighborhood = self.getNeighborhood(Point)
+
+        connexions = []
+        for e in neighborhood:
+            if e in self.border:
+                connexions.append(e)
+        
+        Point = max(connexions)
+        visited.append(Point)
+        stack.append(Point)
+
+        
+        
+        
