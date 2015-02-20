@@ -135,12 +135,19 @@ def processImage():
     for i in figures:
         #print "i: ",i
         i.sort()
+        n_elem = len(i)
         y_min = i[0][0]
-        y_max = i[len(i)-1][0]
-        x_min =  i[len(i)-1][1]
+        y_max = i[n_elem-1][0]
+        x_min =  i[n_elem-1][1]
         x_max = 0
 
+        sum_x = 0
+        sum_y = 0
+
         for e in i:
+            sum_x += e[1]
+            sum_y += e[0]
+
             if e[1] > x_max:
                 x_max = e[1]
             if e[1] < x_min:
@@ -154,6 +161,10 @@ def processImage():
         for z in range(y_min,y_max+1):
             test.originalImg[z,x_min] = color
             test.originalImg[z,x_max] = color
+
+        centerOfMass = [sum_y/n_elem,sum_x/n_elem]
+
+        test.originalImg[centerOfMass[0],centerOfMass[1]] = [0,0,255]
 
 
     cv2.imwrite("result2.png",test.originalImg)
