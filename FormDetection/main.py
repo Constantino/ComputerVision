@@ -6,7 +6,7 @@ from tkFileDialog import *
 import sys
 from numpy import *
 from ComputerVision.EdgeDetection import EdgeDetection as ed
-
+import random
 
 myBackground = 0
 
@@ -146,15 +146,17 @@ def processImage():
             if e[1] < x_min:
                 x_min = e[1]
 
+        color = [random.randrange(255),random.randrange(255),random.randrange(255)]
+
         for z in range(x_min,x_max+1):
-            test.imgCopy[y_min,z] = 0
-            test.imgCopy[y_max,z] = 0
+            test.originalImg[y_min,z] = color
+            test.originalImg[y_max,z] = color
         for z in range(y_min,y_max+1):
-            test.imgCopy[z,x_min] = 0
-            test.imgCopy[z,x_max] = 0
+            test.originalImg[z,x_min] = color
+            test.originalImg[z,x_max] = color
 
 
-    cv2.imwrite("result2.png",test.imgCopy)
+    cv2.imwrite("result2.png",test.originalImg)
 
     del test.histogram[:] # remove all the elements in the histogram
 
