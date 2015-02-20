@@ -106,6 +106,8 @@ def paintBorder(test):
 		else:
 			test.imgCopy[r,c] = 0
 
+
+
 def processImage():
     
     test = ed.EdgeDetection()
@@ -123,15 +125,34 @@ def processImage():
     #getRidOfBackground(test,test.border)
 
     
-    figure = detectFigures(test,test.border,myBackground)#applyDFS(test,test.border,myBackground)
-    """
-    for r in (1,test.height-1,1):
-        for c in (1,test.width-1,1):
-            if [r,c] in figure:
-                test.imgCopy[r,c] = 100
-    """
-    #for e in figure:
-    #    test.imgCopy[e] = 100
+    figures = detectFigures(test,test.border,myBackground)#applyDFS(test,test.border,myBackground)
+
+    
+
+
+    
+    print "Drawing bounding-box"
+    for i in figures:
+        #print "i: ",i
+        i.sort()
+        y_min = i[0][0]
+        y_max = i[len(i)-1][0]
+        x_min =  i[len(i)-1][1]
+        x_max = 0
+
+        for e in i:
+            if e[1] > x_max:
+                x_max = e[1]
+            if e[1] < x_min:
+                x_min = e[1]
+
+        for z in range(x_min,x_max+1):
+            test.imgCopy[y_min,z] = 0
+            test.imgCopy[y_max,z] = 0
+        for z in range(y_min,y_max+1):
+            test.imgCopy[z,x_min] = 0
+            test.imgCopy[z,x_max] = 0
+
 
     cv2.imwrite("result2.png",test.imgCopy)
 
