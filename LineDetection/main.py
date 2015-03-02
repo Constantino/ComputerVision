@@ -49,14 +49,14 @@ histogram = []
 c = {}
 def getEquation(point,angle=0):
     
-    #for angle in range(0,180,10):
-    p = point[0]*math.cos(angle) + point[1]*math.sin(angle)
+    for angle in range(0,180,10):
+        p = point[0]*math.cos(angle) + point[1]*math.sin(angle)
 
-    if [p,angle] not in histogram:
-        histogram.append([p,angle])
-        c[str(round(p))+","+str(angle)] = 0
-    else:
-        c[str(round(p))+","+str(angle)] += 1
+        if [p,angle] not in histogram:
+            histogram.append([p,angle])
+            c[str(round(p))+","+str(angle)] = 0
+        else:
+            c[str(round(p))+","+str(angle)] += 1
 
 
 def drawLines():
