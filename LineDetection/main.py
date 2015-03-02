@@ -7,6 +7,7 @@ import sys
 from numpy import *
 #from EdgeDetection import EdgeDetection as ed
 from ShapeDetection import ShapeDetection as sd
+import math
 
 def groupByAngle():
     
@@ -29,7 +30,14 @@ def groupByAngle():
                 
 
 def getFromGroup():
-    #detect = shapeDetector.applyDFS(shapeDetector.test.border,background)
+    detect = shapeDetector.applyDFS(shapeDetector.test,groups[0],background)
+    return detect
+    """
+    for i in detect:
+        shapeDetector.test.originalImg[i[0],i[1]] = [0,0,255]
+
+    cv2.imwrite("lines_Test.png",shapeDetector.test.originalImg)
+    """
 
 def calcDistributionOfSizes():
     return
@@ -37,11 +45,19 @@ def calcDistributionOfSizes():
 def discardLittleLines():
     return
 
-def getEquation():
-
+histogram = []
+c = {}
+def getEquation(point,angle=0):
     
+    #for angle in range(0,180,10):
+    p = point[0]*math.cos(angle) + point[1]*math.sin(angle)
 
-    return
+    if [p,angle] not in histogram:
+        histogram.append([p,angle])
+        c[str(round(p))+","+str(angle)] = 0
+    else:
+        c[str(round(p))+","+str(angle)] += 1
+
 
 def drawLines():
     return
@@ -58,7 +74,22 @@ groups = [[],[],[],[]]
 def main():
     groupByAngle()
 
-    getFromGroup()
+    pointsGrouped = getFromGroup()
 
+    for point in pointsGrouped:
+        getEquation(point)
+
+    maxValue = 0
+    keyChosen = ""
+
+    print c
+
+    for key,value in c.items():
+        if value > maxValue:
+            maxValue = value
+            keyChosen = key
+
+    print "key: ",key," value: ",value
+    
 
 main()
