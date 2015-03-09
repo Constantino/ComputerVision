@@ -3,6 +3,7 @@ from Tkinter import *
 from tkFileDialog import *
 import sys
 from numpy import *
+import math
 
 class EdgeDetection:
 	
@@ -11,8 +12,8 @@ class EdgeDetection:
 
 		if len(sys.argv) > 1:
 		    self.debug = int(sys.argv[1])
-
-		self.img = None
+                    
+		self.originalImg = None
 		self.imgCopy = None
 		self.height = None
 		self.width = None
@@ -30,13 +31,20 @@ class EdgeDetection:
 		    [ [-1,-2,-1],[0,0,0],[1,2,1] ], #mask 7
 		    [ [-2,-1,0],[-1,0,1],[0,1,2] ]  #mask 8
 		] 
+		
+		#Sobel's mask for DG
+		self.DGMasks = [
+			[ [-1,0,1], [-2,0,2], [-1,0,1] ],
+			[ [1,2,1], [0,0,0], [-1,-2,-1] ]
+		]
 
 		self.histogram = []
 		self.border = []
+                self.angles = []
 
 	def preProcessImg(self,imagePath):
-	    img = cv2.imread(imagePath)
-	    self.img = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY) #convert to grayscale
+	    self.originalImg = cv2.imread(imagePath)
+	    self.img = cv2.cvtColor(self.originalImg,cv2.COLOR_RGB2GRAY) #convert to grayscale
 	    self.imgCopy = self.img
 	    self.height, self.width = self.img.shape
             if self.debug:
@@ -58,8 +66,39 @@ class EdgeDetection:
 
 	    maxGradient = max(pixelGradients) #the gradient of the pixel is the maximum gradient obtained
 
-	    return maxGradient
+            self.angles.append(self.setAngles(pixelGradients,maxGradient))
 
+	    return maxGradient
+	
+	def applyDGMasks(self,pixel,img):
+		pixelGradients = []
+		indexer = [-pixel[0]+1,-pixel[1]+1] # used to get the equivalent position in the mask
+		
+		for i in range(len(self.mask)):
+			gradient = 0
+			for r in range(pixel[0]-1, pixel[0]+2): # used for a neighborhood 3x3... I need to improve it
+			    for c in range(pixel[1]-1,pixel[1]+2):
+				gradient += img[r,c]*self.mask[i][r+indexer[0]][c+indexer[1]] #convolution matrix * each pixel
+
+			pixelGradients.append(gradient) #the gradient of the mask applied is stored
+
+		maxGradient = abs(pixelGradients[0]) + abs(pixelGradients[1])
+		angle = math.atan2(pixelGradients[1],pixelGradients[0])
+
+		return maxGradient,angle
+
+        def setAngles(self,pixelGradients,maxGradient):
+
+           index = pixelGradients.index(maxGradient) + 1
+
+           if index == 1 or index == 5:
+               return 90
+           elif index == 2 or index == 6:
+               return 45
+           elif index == 3 or index == 7:
+               return 0
+           else:
+               return -45
 
 	def getThreshold(self,histogram):
 	    #Basic global thresholding
@@ -115,7 +154,9 @@ class EdgeDetection:
 	    self.preProcessImg(self.path)
 	    for y in range(1,self.height-1,1):
 		for x in range(1,self.width-1,1):
-		    self.histogram.append( self.applyMasks([y,x],self.img) ) #Apply masks for each pixel and save the gradient in the histogram
+		    gradient,angle = self.applyDGMasks([y,x],self.img)
+		    self.histogram.append(gradient) #Apply masks for each pixel and save the gradient in the histogram
+		    self.angles.append(angle)
 
 	    self.T = self.getThreshold(self.histogram)
 	    self.getBorders(self.T)
