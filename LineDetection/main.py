@@ -9,15 +9,18 @@ from numpy import *
 from ShapeDetection import ShapeDetection as sd
 import math
 
-def getFromGroup(shapeDetector):
-    detect = shapeDetector.applyDFS(shapeDetector.test,shapeDetector.test.border,shapeDetector.myBackground)
-    return detect
-    """
-    for i in detect:
-        shapeDetector.test.originalImg[i[0],i[1]] = [0,0,255]
+def getFromGroup(shapeDetector,bg):
+	detect = shapeDetector.applyDFS(shapeDetector.test,shapeDetector.test.border,bg)
+	imgC = shapeDetector.test.originalImg
 
-    cv2.imwrite("lines_Test.png",shapeDetector.test.originalImg)
-    """
+		
+	"""	
+	for i in shapeDetector.test.border:
+        	 imgC[i[0],i[1]]= [0,0,255]
+	"""
+	cv2.imwrite("lines_fig.png",imgC)
+
+	return detect
 
 def calcDistributionOfSizes():
     return
@@ -71,8 +74,16 @@ def makeVotationByRho(points,test):
 				rho = (x-test.width/2)*cos(test.angles[index_counter]) + (y/2 - test.height)*sin(test.angles[index_counter]) 
 				print "rho: ",rho
 				
-				container.append([test.angles[index_counter],'%.0f' % (int(180 * (test.angles[index_counter] / 3.1416))/4), '%.0f' % rho,[y,x]])
+				container.append([test.angles[index_counter],'%.0f' % (int(180 * (test.angles[index_counter] / 3.1416))/18), '%.0f' % rho,[y,x]])
+				#shapeDetector.test.originalImg[y,x] = [0,255,0]
 				index_counter += 1
+			#else:
+				#shapeDetector.test.originalImg[y,x] = [0,0,0]
+		
+	#for element in points:
+		#shapeDetector.test.originalImg[element[0],element[1]] = [255,0,0]
+		
+
 	return container
 
 def createCombinations(container,test):
@@ -87,19 +98,12 @@ def createCombinations(container,test):
 	return comb
 
 def countMostFrecuent(comb):
-	freq = dict()
-	bigger = 0
-	for item in comb:
-		if item in freq:
-			freq[item] += 1
-			if freq[item] > freq[bigger]:
-				bigger = item
-		else:
-			if len(freq) == 0:
-				bigger = item
-			freq[item] = 1
-		
-	print "Freq: ",freq
+	bigger = ""
+	for i in comb:
+		if bigger == "":
+			bigger = i
+		elif comb[i] > comb[bigger]:
+			bigger = i
 		
 	return bigger
 
@@ -113,7 +117,13 @@ background = shapeDetector.getBackground()
 groups = [[],[],[],[]]
 
 def main():
-	fig = getFromGroup(shapeDetector)
+	fig = getFromGroup(shapeDetector,background)
+	
+	for i in fig:
+        	shapeDetector.test.originalImg[i[0],i[1]] = [100,100,100]
+		#shapeDetector.test.originalImg[i] = [100,100,100]
+		cv2.imwrite("lines_fig.png",shapeDetector.test.originalImg)
+
 	container = makeVotationByRho(fig,shapeDetector.test)
 	comb = createCombinations(container,shapeDetector.test)
 	biggerComb = countMostFrecuent(comb)
@@ -129,9 +139,19 @@ def main():
 		print "angle,rho ",(angle,rho)
 		comp = (angle,rho)
 		if biggerComb == comp:	
-			print "pinto de rojo"
-			shapeDetector.test.originalImg[point] = [0,0,255]
+			print "pinto de azul"
+			shapeDetector.test.originalImg[point[0],point[1]] = [255,0,0]
 			
+
+	angle = biggerComb[0]
+	rho = biggerComb[1]
+	
+
+	for x in range(1,shapeDetector.test.width-1,1):
+		valuey1 = (-1.0*cos(float(angle)))*x
+		valuey2 = (float(rho)/sin(float(angle)))
+		valuey = valuey1+valuey2
+		#shapeDetector.test.originalImg[valuey/2 - shapeDetector.test.height,x] = [0,0,255]
 
 	print "printing img"
 	cv2.imwrite("lines_Test.png",shapeDetector.test.originalImg)
