@@ -1,5 +1,5 @@
 from random import randint, random
-from math import sqrt, ceil, floor, fabs
+from math import sqrt, ceil, floor, fabs, atan2, cos, sin
 import numpy as np
 import cv2
 from ShapeDetection import ShapeDetection as sd
@@ -97,28 +97,20 @@ print "Gy: "
 print Gy
 
 print "x_min: ",x_min," centerOfMass: ",centerOfMass," radio: ",radio
-p = shapeDetector.test.border[0]
-shapeDetector.test.originalImg[p[0],p[1]] = [255,0,0]
 
-votos = dict()
-counter = 0
-for pixel in shapeDetector.test.border:
-	g = sqrt( Gx[counter]**2 + Gy[counter]**2 )
-	if fabs(g) > 0:
-            cosTheta = Gx[counter] / g
-            sinTheta = Gy[counter] / g
-            xc = int(round(pixel[1] - radio * cosTheta))
-            yc = int(round(pixel[0] - radio * sinTheta))
-            xcm = xc# + x_max / 2
-            ycm = yc#y_max / 2 - yc
-            if xcm >= 0 and xcm < x_max and ycm >= 0 and ycm < y_max:
-		shapeDetector.test.originalImg[ycm,xcm] = [255,0,0]
-		v = str(ycm)+","+str(xcm)
-		if v not in votos:
-			votos[v] = 0
-	        else:
-			votos[v] += 1
+for i in range(len(shapeDetector.test.border)):
+	p = shapeDetector.test.border[i]
+	shapeDetector.test.originalImg[p[0],p[1]] = [255,0,0]
+	g = sqrt( Gx[i]**2 + Gy[i]**2 )
+	cosTheta = Gx[i] / g
+	sinTheta = Gy[i] / g
+	angle = atan2(Gy[i],Gx[i])
+	xc = int(round(p[1] - radio * cosTheta))
+	yc = int(round(p[0] - radio * sinTheta))
 	
-print "votos: ",votos
+	if xc >= 0 and xc < x_max and yc >= 0 and yc < y_max:
+		shapeDetector.test.originalImg[yc,xc] = [0,0,255]
+
+
 cv2.imwrite("result_Circle.png",shapeDetector.test.originalImg)
 
