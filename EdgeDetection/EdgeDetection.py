@@ -19,7 +19,7 @@ class EdgeDetection:
 		self.width = None
 		self.path = None
 		self.T = None
-
+                
 		#Robinson's "5-level" masks
 		self.mask = [ 
 		    [ [-1,0,1],[-2,0,2],[-1,0,1] ], #mask 1
@@ -41,6 +41,7 @@ class EdgeDetection:
 		self.histogram = []
 		self.border = []
                 self.angles = []
+                self.borderInfo = []
 
 	def preProcessImg(self,imagePath):
 	    self.originalImg = cv2.imread(imagePath)
@@ -147,6 +148,7 @@ class EdgeDetection:
 				for i in range(r-1,r+2): #big border painting the neighborhood for each pixel border detected
 				    for j in range(c-1,c+2):
 					self.border.append([i,j])
+                                        self.borderInfo.append([ [i,j],self.histogram[index_counter],self.angles[index_counter] ])
 
 			    index_counter += 1
 
@@ -156,9 +158,8 @@ class EdgeDetection:
 		for x in range(1,self.width-1,1):
 		    gradient,angle = self.applyDGMasks([y,x],self.img)
 		    self.histogram.append(gradient) #Apply masks for each pixel and save the gradient in the histogram
+                    #self.borderInfo.append([ [y,x],gradient,angle ])
 		    self.angles.append(angle)
 
 	    self.T = self.getThreshold(self.histogram)
 	    self.getBorders(self.T)
-
-
