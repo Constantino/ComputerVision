@@ -32,7 +32,7 @@ def getTangentEq(test):
         drawLineBetweenPoints(point1,point2,test)
         middleP = [int(abs(point1[0]+point2[0])/2) , int(abs(point1[1] + point2[1])/2) ]
         print "middleP: ",middleP
-        drawVotationLine(middleP,[y,x],test)
+        drawVotingLine(middleP,[y,x],test)
         cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
     return 
@@ -97,7 +97,7 @@ def drawLineBetweenPoints(point1, point2,test):
 
     return 
 
-def drawVotationLine(point1, point2, test):
+def drawVotingLine(point1, point2, test):
 
     #print "part1: ",(point2[0]-point1[0])
     #print "part2: ",(point2[1]-point1[1])
@@ -119,7 +119,7 @@ def drawVotationLine(point1, point2, test):
 
     for x in range(start,test.width,1):
         y = int( round( m*(x - start) + b ) )
-        print "votationL -> y: ",y," m: ",m," b: ",b
+        print "votingL -> y: ",y," m: ",m," b: ",b
         
         
         if y > 0  and y < test.height:
