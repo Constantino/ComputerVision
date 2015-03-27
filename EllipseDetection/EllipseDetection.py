@@ -4,9 +4,63 @@ import numpy as np
 import cv2
 from ShapeDetection import ShapeDetection as sd
 
-def getTangent(test):
+def getTangentEq(test):
+    point1,gradient1,angle1 = test.borderInfo[0]
+    point2, gradient2, angle2 = test.borderInfo[110]
 
-    for item in range(0,len(test.borderInfo)-1,20):
+    eq1 = processTangent(point1,angle1,test)
+    eq2 = processTangent(point2,angle2,test)
+    print "eq1: ",eq1
+    print "eq2: ",eq2
+    y,x = getLinearEq(eq1,eq2,test)
+
+    #y = int( round( eq1[0]*(x)+point1[0] ) )
+
+    test.originalImg[y,x] = [0,0,255]
+    
+    cv2.imwrite("Tangents_ellipse.png",test.originalImg)
+
+    return 
+
+def processTangent(point,angle,test):
+
+    angle = 3.1416/2-angle
+
+    dx = cos(angle)
+    dy = sin(angle)
+ 
+    m = dx/dy
+    
+    secondPoint = [int(round(m*(100-point[1])+point[0])), 100]
+
+    for c in xrange(test.width):
+        y = int(round(m*(c-point[1])+point[0]))
+        #print "y: ",y                                                                                                                      
+        if y >= 0 and y < test.height:
+            test.originalImg[y,c] = [0,255,0]
+
+    cv2.imwrite("Tangents_"+str(m)+".png",test.originalImg)
+
+    eq = [m,point,secondPoint[0]]
+    
+
+    return eq
+
+def getLinearEq(eq1,eq2,test):
+
+    y1, y2 = int(), int()
+
+    for x in xrange(test.width):
+        y1 = int(round(eq1[0]*(x-eq1[1][1])+eq1[1][0]))
+        y2 = int(round(eq2[0]*(x-eq2[1][1])+eq2[1][0]))
+        if y1 == y2:
+            print "y1 == y2 = ",y1
+            return y1,x
+
+
+def getAllTangents(test):
+
+    for item in range(0,len(test.borderInfo)-1,1):
         point,gradient,angle = test.borderInfo[item]#test.borderInfo[300]
 
         print "Point1: ", point
@@ -16,11 +70,11 @@ def getTangent(test):
         print "-> Gradient: ",gradient
         print "-> Angle: ",angle
 
-        beta = 3.1416/2-angle #90 - abs(angle)
-        #beta -= beta*.3
-        print "beta: ", beta
-        dx = cos(beta)
-        dy = sin(beta)
+        angle = 3.1416/2-angle
+        
+        print "angle: ", angle
+        dx = cos(angle)
+        dy = sin(angle)
 
         #m = dy/dx
         m = dx/dy
@@ -35,14 +89,7 @@ def getTangent(test):
             if y >= 0 and y < test.height:
                 test.originalImg[y,c] = [0,255,0]
 
-        """
-        point2 = [int(round(m*(point[1]-5 - point[1]))),point[1]]
-
-        print "point2: ",point2
-
-        test.originalImg[point2[0],point2[1]] = [0,255,0] #Paint point 2
-        """
-
+                
         cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
     return
@@ -73,7 +120,8 @@ def main():
     height = shapeDetector.test.height
 
     #testPaintBorders(height,width, shapeDetector.test)
-    getTangent(shapeDetector.test)
+    #getAllTangents(shapeDetector.test)
+    getTangentEq(shapeDetector.test)
     
 
 main()
