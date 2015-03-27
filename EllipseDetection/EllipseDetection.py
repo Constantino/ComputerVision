@@ -23,7 +23,9 @@ def getTangentEq(test):
                     test.originalImg[r,c] = [0,0,255]
 
     drawLineBetweenPoints(point1,point2,test)
-    
+    middleP = [int(abs(point1[0]+point2[0])/2) , int(abs(point1[1] + point2[1])/2) ]
+    print "middleP: ",middleP
+    drawVotationLine(middleP,[y,x],test)
     cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
     return 
@@ -83,6 +85,36 @@ def drawLineBetweenPoints(point1, point2,test):
         print "-.--> y: ",y," m: ",m," b: ",b
         if y > 0  and y < test.height:
             test.originalImg[y,x] = [255,0,0]
+
+    cv2.imwrite("Tangents_"+str(m)+".png",test.originalImg)
+
+    return 
+
+def drawVotationLine(point1, point2, test):
+
+    #print "part1: ",(point2[0]-point1[0])
+    #print "part2: ",(point2[1]-point1[1])
+    m = (point2[0]-point1[0])*1.0/(point2[1]-point1[1])
+    #print "**m ",m
+
+    b = min(point2[0],point1[0])
+
+    #start = point1[1]
+    start = min(point1[1],point2[1])
+    
+    finish = max(point1[1],point2[1])
+
+    print "p1, p2: ",point1," , ",point2
+
+    for x in range(start,test.width,1):
+        y = int( round( m*(x - start) + b ) )
+        print "votationL -> y: ",y," m: ",m," b: ",b
+        
+        
+        if y > 0  and y < test.height:
+            test.originalImg[y,x] = [0,0,0]
+            if [y,x] not in test.border:
+                test.originalImg[y,x] = [0,233,255]
 
     cv2.imwrite("Tangents_"+str(m)+".png",test.originalImg)
 
