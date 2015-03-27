@@ -6,32 +6,34 @@ from ShapeDetection import ShapeDetection as sd
 
 def getTangent(test):
 
-    for item in test.borderInfo:
-        point,gradient,angle = item#test.borderInfo[300]
+    for item in range(0,len(test.borderInfo)-1,20):
+        point,gradient,angle = test.borderInfo[item]#test.borderInfo[300]
 
         print "Point1: ", point
 
-        test.originalImg[point[0],point[1]] = [255,0,0] #Paint point 1
+        #test.originalImg[point[0],point[1]] = [255,0,0] #Paint point 1
     
         print "-> Gradient: ",gradient
         print "-> Angle: ",angle
 
         beta = 3.1416/2-angle #90 - abs(angle)
+        #beta -= beta*.3
         print "beta: ", beta
         dx = cos(beta)
         dy = sin(beta)
 
-        m = dy/dx
-
+        #m = dy/dx
+        m = dx/dy
         print "dx,dy: ",dx,",",dy
         print "m: ",m
 
-        for r in xrange(test.height):
-            for c in xrange(test.width):
-                y = int(round(m*(c-point[1])+point[0]))
-                #print "y: ",y
-                if y >= 0 and y < test.height:
-                    test.originalImg[y,c] = [0,255,0]
+        
+        #for r in xrange(test.height):
+        for c in xrange(test.width):
+            y = int(round(m*(c-point[1])+point[0]))
+            #print "y: ",y
+            if y >= 0 and y < test.height:
+                test.originalImg[y,c] = [0,255,0]
 
         """
         point2 = [int(round(m*(point[1]-5 - point[1]))),point[1]]
@@ -40,6 +42,7 @@ def getTangent(test):
 
         test.originalImg[point2[0],point2[1]] = [0,255,0] #Paint point 2
         """
+
         cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
     return
@@ -63,7 +66,8 @@ def main():
 
     shapeDetector.test.path = "img/ellipse.png"
 
-    figures = shapeDetector.detectFigures()
+    #figures = shapeDetector.detectFigures()
+    shapeDetector.test.detectBorders()
 
     width = shapeDetector.test.width
     height = shapeDetector.test.height
