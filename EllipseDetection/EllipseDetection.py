@@ -1,34 +1,46 @@
 from random import randint, random
-from math import sqrt, ceil, floor, fabs, atan2, cos, sin
+from math import sqrt, ceil, floor, fabs, atan2, cos, sin, pi
 import numpy as np
 import cv2
 from ShapeDetection import ShapeDetection as sd
 
 def getTangent(test):
 
-    point,gradient,angle = test.borderInfo[0]
+    for item in test.borderInfo:
+        point,gradient,angle = item#test.borderInfo[300]
 
-    print "Point1: ", point
+        print "Point1: ", point
 
-    test.originalImg[point[0],point[1]] = [255,0,0]
+        test.originalImg[point[0],point[1]] = [255,0,0] #Paint point 1
     
-    print "-> Gradient: ",gradient
-    print "-> Angle: ",angle
+        print "-> Gradient: ",gradient
+        print "-> Angle: ",angle
 
-    beta = .21#90 - abs(angle)
+        beta = 3.1416/2-angle #90 - abs(angle)
+        print "beta: ", beta
+        dx = cos(beta)
+        dy = sin(beta)
 
-    dx = cos(beta)
-    dy = sin(beta)
+        m = dy/dx
 
-    print "dx,dy: ",dx,",",dy
+        print "dx,dy: ",dx,",",dy
+        print "m: ",m
 
-    point2 = [round(point[0]-abs(dy)),round(point[1]-abs(dx))]
+        for r in xrange(test.height):
+            for c in xrange(test.width):
+                y = int(round(m*(c-point[1])+point[0]))
+                #print "y: ",y
+                if y >= 0 and y < test.height:
+                    test.originalImg[y,c] = [0,255,0]
 
-    print "point2: ",point2
+        """
+        point2 = [int(round(m*(point[1]-5 - point[1]))),point[1]]
 
-    test.originalImg[point2[0],point2[1]] = [0,255,0]
+        print "point2: ",point2
 
-    cv2.imwrite("Tangents_ellipse.png",test.originalImg)
+        test.originalImg[point2[0],point2[1]] = [0,255,0] #Paint point 2
+        """
+        cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
     return
 
