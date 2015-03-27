@@ -13,10 +13,16 @@ def getTangentEq(test):
     print "eq1: ",eq1
     print "eq2: ",eq2
     y,x = getLinearEq(eq1,eq2,test)
+    print "y,x: ",y,",",x
+    
+    if y != 0 and x != 0:
 
-    #y = int( round( eq1[0]*(x)+point1[0] ) )
+        if y > 0 and y < test.height and x > 0 and x < test.width:
+            for r in range(y-1,y+2,1):
+                for c in range(x-1,x+2,1):
+                    test.originalImg[r,c] = [0,0,255]
 
-    test.originalImg[y,x] = [0,0,255]
+    drawLineBetweenPoints(point1,point2,test)
     
     cv2.imwrite("Tangents_ellipse.png",test.originalImg)
 
@@ -50,13 +56,37 @@ def getLinearEq(eq1,eq2,test):
 
     y1, y2 = int(), int()
 
-    for x in xrange(test.width):
+    for x in xrange(-test.width*6,test.width*6,1):
         y1 = int(round(eq1[0]*(x-eq1[1][1])+eq1[1][0]))
         y2 = int(round(eq2[0]*(x-eq2[1][1])+eq2[1][0]))
         if y1 == y2:
             print "y1 == y2 = ",y1
             return y1,x
+    
+    return 0,0
 
+def drawLineBetweenPoints(point1, point2,test):
+    print "part1: ",(point2[0]-point1[0])
+    print "part2: ",(point2[1]-point1[1])
+    m = (point2[0]-point1[0])*1.0/(point2[1]-point1[1])
+    print "**m ",m
+
+    b = min(point2[0],point1[0])
+
+    start = min(point1[1],point2[1])
+    finish = max(point1[1],point2[1])
+
+    print "p1, p2: ",point1," , ",point2
+
+    for x in range(start,finish,1):
+        y = int( round( m*(x - start) + b ) )
+        print "-.--> y: ",y," m: ",m," b: ",b
+        if y > 0  and y < test.height:
+            test.originalImg[y,x] = [255,0,0]
+
+    cv2.imwrite("Tangents_"+str(m)+".png",test.originalImg)
+
+    return 
 
 def getAllTangents(test):
 
