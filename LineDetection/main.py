@@ -47,10 +47,12 @@ resultado = list()
 index_counter = 0
 w=shapeDetector.test.width
 h=shapeDetector.test.height
+
+#Get rho and angle data
 for y in xrange(1,h-1,1):
 	datos = list()
 	for x in xrange(1,w-1,1):
-            #angulo = shapeDetector.test.angles[index_counter]
+            
             if [y,x] in shapeDetector.test.border:
                 
                 angulo = shapeDetector.test.borderInfo[index_counter][2]
@@ -71,7 +73,7 @@ for y in xrange(1,h-1,1):
                 
         resultado.append(datos)
 		
-
+#Process voting
 comb = dict()
 for y in xrange(1,len(resultado),1):
 	for x in xrange(1,len(resultado[y]),1):
@@ -89,7 +91,7 @@ frec = frecuentes(comb, int(ceil(len(comb) * incluir)))
 frec = []
 
 for i in comb:
-    if comb[i] > 1:#t:
+    if comb[i] > 1:
             
         frec.append(i)
 
@@ -97,6 +99,7 @@ print "frec: ",frec
 
 print "Comb: ", comb
 
+#Draw by angle
 for y in xrange(1,len(resultado)-1,1):
 	renglon = list()
 	for x in xrange(1,len(resultado[y])-1,1):
