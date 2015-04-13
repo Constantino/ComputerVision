@@ -88,13 +88,14 @@ for y in xrange(1,len(resultado),1):
 				comb[combinacion] = 1
 
 frec = frecuentes(comb, int(ceil(len(comb) * incluir)))
+"""
 frec = []
 
 for i in comb:
     if comb[i] > 1:
             
         frec.append(i)
-
+"""
 print "frec: ",frec
 
 print "Comb: ", comb
