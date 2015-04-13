@@ -4,6 +4,11 @@ from ShapeDetection import ShapeDetection as sd
 import math
 from random import randint
 
+"""
+Disclaimer: This code is based on the algorithms provided by Elisa Schaeffer.
+Source: http://elisa.dyndns-web.com/teaching/comp/vision/histograma.tar.gz
+"""
+
 def frecuentes(histo, cantidad):
     frec = list()
     for valor in histo:
