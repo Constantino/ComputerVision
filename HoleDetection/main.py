@@ -8,7 +8,7 @@ def preProcessImg(imagePath):
 
     return originalImg,img,imgCopy,height,width
 
-def getHorizontalHistogram():
+def getHorizontalHistogram(height,width,img):
     hist = {}
     for c in range(1,width-1,1):
         sum_hist = 0
@@ -19,7 +19,7 @@ def getHorizontalHistogram():
 
     return hist
 
-def getVerticalHistogram():
+def getVerticalHistogram(height,width,img):
     hist = {}
     for r in range(1,height-1,1):
         sum_hist=0
@@ -28,6 +28,20 @@ def getVerticalHistogram():
         hist[r] = sum_hist
 
     return hist
+
+def getPeaksByMean(histogram):
+    peaks = {}
+    sum_hist = 0
+
+    for e in histogram:
+        sum_hist += histogram[e]
+    mean = sum_hist/len(histogram)
+    
+    for e in histogram:
+        if histogram[e] < mean:
+            peaks[e] = histogram[e]
+
+    return peaks
 
 def getBackground(originalImg,height,width):
 
@@ -90,6 +104,11 @@ def main():
     print "Background: ",background
     paintBackground(originalImg,imgCopy,background,height,width)
 
+    verticalHist = getVerticalHistogram(height,width,img)
+    horizontalHist = getHorizontalHistogram(height,width,img)
+
+    print "vHist: ",verticalHist
+    print "hHist: ",horizontalHist
     
 main()
 
