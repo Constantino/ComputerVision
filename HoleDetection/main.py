@@ -99,7 +99,7 @@ def main():
 
     ColorHist = {}
 
-    originalImg, img, imgCopy, height, width = preProcessImg("img/holes_test1.jpg")
+    originalImg, img, imgCopy, height, width = preProcessImg("img/holes_test2.jpg")
     background,colors = getBackground(originalImg,height,width)
     print "Background: ",background
     paintBackground(originalImg,imgCopy,background,height,width)
@@ -109,6 +109,22 @@ def main():
 
     print "vHist: ",verticalHist
     print "hHist: ",horizontalHist
+
+    verticalPeaks = getPeaksByMean(verticalHist)
+    horizontalPeaks = getPeaksByMean(horizontalHist)
+
+    red = [0,0,255]
+    blue = [255,0,0]
+
+    for e in verticalPeaks:
+        for c in xrange(width):
+            originalImg[e,c] = red
+
+    for e in horizontalPeaks:
+        for r in xrange(height):
+            originalImg[r,e] = blue
+
+    cv2.imwrite("verticalPeaks.png",originalImg)
     
 main()
 
