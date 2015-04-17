@@ -1,5 +1,6 @@
 import cv2
 from EdgeDetection import EdgeDetection as ed
+from random import choice,randint
 
 def preProcessImg(imagePath):
     originalImg = cv2.imread(imagePath)
@@ -109,6 +110,88 @@ def paintBackground(originalImg,imgCopy,background,height,width):
                 imgCopy[r,c] = 255
     return imgCopy
 
+def getNeighborhood(pixel,height,width):
+
+    neighborhood = []
+
+    for i in range(pixel[0]-1,pixel[0]+2):
+        for j in range(pixel[1]-1,pixel[1]+2):
+            if i < height and j < width and i > 0 and j > 0:
+                
+                neighborhood.append([i,j])
+                
+    return neighborhood
+
+
+def applyDFS(img,start,validation,height, width):
+    visited = []
+    stack = []
+    point = []
+    
+    point = start
+    
+    visited.append(point)
+    stack.append(point)
+    
+    while stack:
+
+        neighborhood = getNeighborhood(point,height,width)
+
+        connexions = []
+        for e in neighborhood:
+            #print "Color img:", img[e[0],e[1]], "against val: ",validation
+            if e in validation:
+                if e not in visited:
+                    connexions.append(e)
+
+        if not connexions:
+            point = stack.pop()
+        else:
+            point = max(connexions)
+            visited.append(point)
+            stack.append(point)
+
+    return visited
+
+def drawBoundingBox(figures,originalImg):    
+    print "Drawing bounding-box"
+    for i in figures:
+                
+        i.sort()
+        n_elem = len(i)
+        y_min = i[0][0]
+        y_max = i[n_elem-1][0]
+        x_min =  i[n_elem-1][1]
+        x_max = 0
+
+        sum_x = 0
+        sum_y = 0
+
+        for e in i:
+            sum_x += e[1]
+            sum_y += e[0]
+
+            if e[1] > x_max:
+                x_max = e[1]
+            if e[1] < x_min:
+                x_min = e[1]
+
+            color = [randint(100,255),randint(100,255),randint(100,255)]
+
+            for z in range(x_min,x_max+1):
+                originalImg[y_min,z] = color
+                originalImg[y_max,z] = color
+            for z in range(y_min,y_max+1):
+                originalImg[z,x_min] = color
+                originalImg[z,x_max] = color
+
+            centerOfMass = [sum_y/n_elem,sum_x/n_elem]
+
+            originalImg[centerOfMass[0],centerOfMass[1]] = [0,0,255]
+
+    return originalImg
+
+
 def main():
     originalImg = None
     img = None
@@ -147,7 +230,33 @@ def main():
         for r in xrange(height):
             originalImg[r,e] = blue
 
-    cv2.imwrite("verticalPeaks.png",originalImg)
+    holePeaks = []
+    
+    for v in verticalPeaks:
+        for h in horizontalPeaks:
+            if imgCopy[v,h] == 0:
+                holePeaks.append([v,h])
+                originalImg[v,h] = [0,0,255]
+
+    holes = []
+    while holePeaks != []:
+        start = choice(holePeaks)
+        visited = applyDFS(imgCopy,start,holePeaks,height, width)
+        holes.append(visited)
+        for e in visited:
+            holePeaks.remove(e)
+
+
+    
+    for e in holes:
+        color = [randint(100,255),randint(100,255),randint(100,255)]
+        for px in e:
+            originalImg[px[0],px[1]] = color
+
+    
+    originalImg = drawBoundingBox(holes,originalImg)
+
+    cv2.imwrite("Peaks.png",originalImg)
     
 main()
 
