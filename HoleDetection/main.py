@@ -176,18 +176,14 @@ def drawBoundingBox(figures,originalImg):
             if e[1] < x_min:
                 x_min = e[1]
 
-            color = [randint(100,255),randint(100,255),randint(100,255)]
+        color = [randint(100,255),randint(100,255),randint(100,255)]
 
-            for z in range(x_min,x_max+1):
-                originalImg[y_min,z] = color
-                originalImg[y_max,z] = color
-            for z in range(y_min,y_max+1):
-                originalImg[z,x_min] = color
-                originalImg[z,x_max] = color
-
-            centerOfMass = [sum_y/n_elem,sum_x/n_elem]
-
-            originalImg[centerOfMass[0],centerOfMass[1]] = [0,0,255]
+        for z in range(x_min,x_max+1):
+            originalImg[y_min,z] = color
+            originalImg[y_max,z] = color
+        for z in range(y_min,y_max+1):
+            originalImg[z,x_min] = color
+            originalImg[z,x_max] = color
 
     return originalImg
 
