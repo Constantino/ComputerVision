@@ -176,7 +176,7 @@ def drawBoundingBox(figures,originalImg):
             if e[1] < x_min:
                 x_min = e[1]
 
-        color = [randint(100,255),randint(100,255),randint(100,255)]
+        color = [randint(100,255),randint(0,150),randint(0,255)]
 
         for z in range(x_min,x_max+1):
             originalImg[y_min,z] = color
@@ -196,7 +196,7 @@ def main():
     width = 0
 
     ColorHist = {}
-    path = "HoleDetection/img/bulletHoles.jpg"
+    path = "HoleDetection/img/holeSheet.jpg"
 
     originalImg, img, imgCopy, height, width = preProcessImg(path)
     background,colors = getBackground(originalImg,height,width)
