@@ -1,4 +1,5 @@
 import cv2
+from EdgeDetection import EdgeDetection as ed
 
 def preProcessImg(imagePath):
     originalImg = cv2.imread(imagePath)
@@ -8,23 +9,42 @@ def preProcessImg(imagePath):
 
     return originalImg,img,imgCopy,height,width
 
-def getHorizontalHistogram(height,width,img):
+def getBorders(path):
+    test = ed.EdgeDetection()
+
+    test.path = path
+
+    test.detectBorders()
+
+    return paintBorder(test)
+
+def paintBorder(test):
+
+    for r in range(1,test.height-1,1):
+        for c in range(1,test.width-1,1):
+            if [r,c] in test.border:
+                test.imgCopy[r,c] = 0
+            else:
+                test.imgCopy[r,c] = 255
+    return test.imgCopy
+
+def getHorizontalHistogram(height,width,imgCopy):
     hist = {}
     for c in range(1,width-1,1):
         sum_hist = 0
         for r in range(1,height-1,1):
-            sum_hist += img[r,c]
+            sum_hist += imgCopy[r,c]
 
         hist[c] = sum_hist
 
     return hist
 
-def getVerticalHistogram(height,width,img):
+def getVerticalHistogram(height,width,imgCopy):
     hist = {}
     for r in range(1,height-1,1):
         sum_hist=0
         for c in range(1,width-1,1):
-            sum_hist += img[r,c]
+            sum_hist += imgCopy[r,c]
         hist[r] = sum_hist
 
     return hist
@@ -84,11 +104,10 @@ def paintBackground(originalImg,imgCopy,background,height,width):
             px_color = originalImg[r,c][0] + originalImg[r,c][1] + originalImg[r,c][2]
             Dif = abs(px_color - background[0])
             #print "Dif: ",Dif
-            if Dif < 150: 
+            if px_color > 10: 
                 
                 imgCopy[r,c] = 255
-
-    cv2.imwrite("imgCopy.png",imgCopy)
+    return imgCopy
 
 def main():
     originalImg = None
@@ -98,14 +117,17 @@ def main():
     width = 0
 
     ColorHist = {}
+    path = "HoleDetection/img/bulletHoles.jpg"
 
-    originalImg, img, imgCopy, height, width = preProcessImg("img/holes_test2.jpg")
+    originalImg, img, imgCopy, height, width = preProcessImg(path)
     background,colors = getBackground(originalImg,height,width)
     print "Background: ",background
-    paintBackground(originalImg,imgCopy,background,height,width)
+    imgCopy = getBorders(path)
 
-    verticalHist = getVerticalHistogram(height,width,img)
-    horizontalHist = getHorizontalHistogram(height,width,img)
+    cv2.imwrite("imgCopy.png",imgCopy)
+
+    verticalHist = getVerticalHistogram(height,width,imgCopy)
+    horizontalHist = getHorizontalHistogram(height,width,imgCopy)
 
     print "vHist: ",verticalHist
     print "hHist: ",horizontalHist
@@ -115,10 +137,11 @@ def main():
 
     red = [0,0,255]
     blue = [255,0,0]
+    green = [0,255,0]
 
     for e in verticalPeaks:
         for c in xrange(width):
-            originalImg[e,c] = red
+            originalImg[e,c] = green
 
     for e in horizontalPeaks:
         for r in xrange(height):
@@ -127,5 +150,4 @@ def main():
     cv2.imwrite("verticalPeaks.png",originalImg)
     
 main()
-
 
