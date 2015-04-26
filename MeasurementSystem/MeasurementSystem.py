@@ -81,6 +81,25 @@ def get_averages(histogram,t):
             
     return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)] #return means 
 
+def draw_bounding_boxes(contourBoxes,thickness):
+
+    for e in contourBoxes:
+        color = [randint(100,255),randint(0,150),randint(0,255)]
+        cv2.drawContours(imgCopy,[e],0,color,thickness)
+        draw_corner_points(e,thickness)
+
+def draw_corner_points(box,thickness):
+    
+    colors = [[0,0,255],[0,255,0],[255,0,0],[155,155,155]]
+    counter = 0
+    for e in box:
+        color_box = [randint(100,255),randint(0,150),randint(0,255)]
+        for x in range(e[0]-thickness,e[0]+thickness):
+            for y in range(e[1]-thickness,e[1]+thickness):
+                imgCopy[y,x] = colors[counter]
+        counter += 1
+
+
 def main():
     ret, th = filter_image(img)
     contours = get_contours(th)
@@ -94,7 +113,9 @@ def main():
     contourBoxes = discard_contours(hist_c,contours_array,t)
     print "contour boxes: ",contourBoxes
 
+    draw_bounding_boxes(contourBoxes,20)
     
+    cv2.imwrite('RESULT.png',imgCopy)
 
 main()
 
