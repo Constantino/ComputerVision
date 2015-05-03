@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-imgPath = "test/test008.jpg"
+imgPath = "test/test011_1v.jpg"
 img = cv2.imread(imgPath,0)
 imgCopy = cv2.imread(imgPath)
 height, width = img.shape
@@ -91,7 +91,13 @@ def draw_bounding_boxes(contourBoxes,thickness):
     for e in contourBoxes:
         color = [randint(100,255),randint(0,150),randint(0,255)]
         cv2.drawContours(imgCopy,[e],-1,color,thickness)
-        #draw_corner_points(e,thickness,0)
+        set_label("Shape detected", e[0])
+        
+
+def set_label(text,coordinate):
+    label = text
+    cv2.putText(imgCopy,label, (coordinate[0], coordinate[1]), cv2.FONT_HERSHEY_SIMPLEX, 2, (50,50,255),5)
+
 
 def draw_corner_points(box,thickness,black):
     
@@ -194,7 +200,7 @@ def main():
     print "t_hist: ",t
     contourBoxes = discard_contours(hist_c,contours_array,t)
     print "contour boxes: ",contourBoxes
-
+    
     #cv2.drawContours(imgCopy,contourBoxes,-1,[0,0,255],15)
     draw_bounding_boxes(contourBoxes,15)
 
