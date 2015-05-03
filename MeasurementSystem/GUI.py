@@ -34,6 +34,11 @@ while 1:
                 print "Select an object as reference"
                 message = font.render('Select an object as reference',1,(255,0,0))
                 found = True
+                
+                image = pygame.image.load("test/test017_2.png")
+                image = pygame.transform.scale(image,(400,600))
+
+
             if 0 < cordx < panel and (35+topPanel) < cordy < (55+topPanel):
                 print "btnSelectReference"
 
@@ -44,8 +49,7 @@ while 1:
                 
                 else:
                     print "You must find shapes first"
-                    message = font.render('You must find shapes first',1,(255,0,0))
-                
+                    message = font.render('You must find shapes first',1,(255,0,0))                
     
 
 
