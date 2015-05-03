@@ -90,7 +90,7 @@ def draw_bounding_boxes(contourBoxes,thickness):
 
     for e in contourBoxes:
         color = [randint(100,255),randint(0,150),randint(0,255)]
-        cv2.drawContours(imgCopy,[e],0,color,thickness)
+        cv2.drawContours(imgCopy,[e],-1,color,thickness)
         #draw_corner_points(e,thickness,0)
 
 def draw_corner_points(box,thickness,black):
@@ -195,7 +195,8 @@ def main():
     contourBoxes = discard_contours(hist_c,contours_array,t)
     print "contour boxes: ",contourBoxes
 
-    cv2.drawContours(imgCopy,contourBoxes,-1,[0,0,255],15)
+    #cv2.drawContours(imgCopy,contourBoxes,-1,[0,0,255],15)
+    draw_bounding_boxes(contourBoxes,15)
 
     cv2.imwrite('RESULT.png',imgCopy)
 
