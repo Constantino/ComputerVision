@@ -4,10 +4,10 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-imgPath = "test/test017.jpg"
-img = cv2.imread(imgPath,0)
-imgCopy = cv2.imread(imgPath)
-height, width = img.shape
+
+global img #= cv2.imread(imgPath,0)
+global imgCopy #= cv2.imread(imgPath)
+global height, width #= img.shape
 
 def filter_image(img):
     #source: http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_imgproc/py_thresholding/py_thresholding.html#thresholding
@@ -41,7 +41,7 @@ def get_histogram_contours(contours):
         hist_contours.append(float("{0:.2f}".format(area)))
         contours_array.append(box)
 
-    print "hist_contours: ",hist_contours
+    #print "hist_contours: ",hist_contours
     return hist_contours,contours_array
 
 def basic_global_thresholding(histogram):
@@ -65,7 +65,7 @@ def discard_contours(histogram,contours,T):
     for i in range(len(contours)):
         if histogram[i] > T:
             contours_filtered.append(contours[i])
-            print "average selected: ",histogram[i]
+            #print "average selected: ",histogram[i]
     return contours_filtered
         
 
@@ -86,21 +86,21 @@ def get_averages(histogram,t):
             
     return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)] #return means 
 
-def draw_bounding_boxes(contourBoxes,thickness):
+def draw_bounding_boxes(imgCopy,contourBoxes,thickness):
     counter = 0
     for e in contourBoxes:
         color = [randint(100,255),randint(0,150),randint(0,255)]
         cv2.drawContours(imgCopy,[e],-1,color,thickness)
-        set_label("Shape "+str(counter), e[1])
+        set_label(imgCopy,"Shape "+str(counter), e[1])
         counter+=1
         
 
-def set_label(text,coordinate):
+def set_label(imgCopy,text,coordinate):
     label = text
     cv2.putText(imgCopy,label, (coordinate[0], coordinate[1]-20), cv2.FONT_HERSHEY_SIMPLEX, 2, (70,70,240),5)
 
 
-def draw_corner_points(box,thickness,black):
+def draw_corner_points(imgCopy,box,thickness,black):
     
     colors = [[0,0,255],[0,255,0],[255,0,0],[155,155,155]]
     counter = 0
@@ -116,7 +116,7 @@ def draw_corner_points(box,thickness,black):
                         
                         
 
-def get_reference_object(contours):
+def get_reference_object(imgCopy,contours):
     shape_colors = []
     for e in contours:
         colors = []
@@ -135,7 +135,7 @@ def get_reference_object(contours):
 
         counter.append(counter_sc)
     
-    print "Counter-colors-shape: ",counter
+    #print "Counter-colors-shape: ",counter
 
     max_value = max(counter)
     shape_index = -1
@@ -143,32 +143,37 @@ def get_reference_object(contours):
         if counter[i] == max_value:
             shape_index = i
 
-    print "shape index: ",shape_index
+    #print "shape index: ",shape_index
 
-def main():
+def FindShapes(ip):
+    imgPath = ip
+    img = cv2.imread(imgPath,0)
+    imgCopy = cv2.imread(imgPath)
+    height, width = img.shape
+
+
     ret, th = filter_image(img)
 
     cv2.imwrite('RESULT_0.png',th)
 
     contours, hierarchy = cv2.findContours(th,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    print "Contours: ",contours
+    #print "Contours: ",contours
     
-    print "len(contours): ",len(contours)
+    #print "len(contours): ",len(contours)
 
     hist_c,contours_array = get_histogram_contours(contours)
     
     t = basic_global_thresholding(hist_c)
-    print "t_hist: ",t
+    #print "t_hist: ",t
     contourBoxes = discard_contours(hist_c,contours_array,t)
-    contourBoxes.pop(0)
-    print "contour boxes: ",contourBoxes
-    
-    #cv2.drawContours(imgCopy,contourBoxes,-1,[0,0,255],15)
-    draw_bounding_boxes(contourBoxes,15)
+    contourBoxes.pop(0) #delete the box of the background
+    #print "contour boxes: ",contourBoxes
+
+    draw_bounding_boxes(imgCopy,contourBoxes,15)
 
     cv2.imwrite('RESULT.png',imgCopy)
 
-main()
+#main()
 
 
 

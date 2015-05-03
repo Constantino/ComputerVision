@@ -1,8 +1,9 @@
 import sys,pygame
+from MeasurementSystem import *
 
 pygame.init()
-
-image = pygame.image.load("test/test017.jpg")
+imgPath = "test/test021.jpg"
+image = pygame.image.load(imgPath)
 
 image = pygame.transform.scale(image,(400,600))
 
@@ -34,8 +35,10 @@ while 1:
                 print "Select an object as reference"
                 message = font.render('Select an object as reference',1,(255,0,0))
                 found = True
-                
-                image = pygame.image.load("test/test017_2.png")
+            
+                FindShapes(imgPath)
+
+                image = pygame.image.load("RESULT.png")
                 image = pygame.transform.scale(image,(400,600))
 
 
