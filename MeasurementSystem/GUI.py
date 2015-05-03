@@ -12,7 +12,7 @@ width, height = imagerect.size
 panel = 90
 topPanel = 40
 
-size = ((width+panel),height)
+size = ((width+panel),(height+topPanel))
 screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("Measurement System")
