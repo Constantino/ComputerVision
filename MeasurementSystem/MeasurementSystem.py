@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-imgPath = "test/llave1.jpg"
+imgPath = "test/test004.jpg"
 img = cv2.imread(imgPath,0)
 imgCopy = cv2.imread(imgPath)
 height, width = img.shape
@@ -87,16 +87,17 @@ def get_averages(histogram,t):
     return [(sum_upper/counter_upper*1.0),(sum_down/counter_down*1.0)] #return means 
 
 def draw_bounding_boxes(contourBoxes,thickness):
-
+    counter = 0
     for e in contourBoxes:
         color = [randint(100,255),randint(0,150),randint(0,255)]
         cv2.drawContours(imgCopy,[e],-1,color,thickness)
-        set_label("Shape detected", e[0])
+        set_label("Shape "+str(counter), e[0])
+        counter+=1
         
 
 def set_label(text,coordinate):
     label = text
-    cv2.putText(imgCopy,label, (coordinate[0], coordinate[1]), cv2.FONT_HERSHEY_SIMPLEX, 2, (50,50,255),5)
+    cv2.putText(imgCopy,label, (coordinate[0], coordinate[1]-20), cv2.FONT_HERSHEY_SIMPLEX, 2, (70,70,240),5)
 
 
 def draw_corner_points(box,thickness,black):
