@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-imgPath = "test/test004.jpg"
+imgPath = "test/test017.jpg"
 img = cv2.imread(imgPath,0)
 imgCopy = cv2.imread(imgPath)
 height, width = img.shape
@@ -91,7 +91,7 @@ def draw_bounding_boxes(contourBoxes,thickness):
     for e in contourBoxes:
         color = [randint(100,255),randint(0,150),randint(0,255)]
         cv2.drawContours(imgCopy,[e],-1,color,thickness)
-        set_label("Shape "+str(counter), e[0])
+        set_label("Shape "+str(counter), e[1])
         counter+=1
         
 
@@ -144,46 +144,6 @@ def get_reference_object(contours):
             shape_index = i
 
     print "shape index: ",shape_index
-
-def transform(img,box):
-    rows,cols = img.shape[:2]
-    #print "box to perspective: ",box[0]," ",box[1]," "," ",box[2]," ",box[3]
-    print "BOX: ",box
-    print "box to trans: ",box[1],box[2],box[0],box[3]
-    #pts1 = np.float32([box[1],box[2],box[0],box[3]])
-    pts1 = np.float32([box[0],box[1],box[3],box[2]])
-    pts2 = np.float32([[0,0],[300,0],[0,300],[300,300]])
-    M = cv2.getPerspectiveTransform(pts1,pts2)
-    
-    dst = cv2.warpPerspective(img,M,(640,480))
-    return dst
-
-def order_points(pts):
-    #source: http://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
-    # initialzie a list of coordinates that will be ordered
-    # such that the first entry in the list is the top-left,
-    # the second entry is the top-right, the third is the
-    # bottom-right, and the fourth is the bottom-left
-    rect = np.zeros((4, 2), dtype = "float32")
-    #rect = []
-    
-    # the top-left point will have the smallest sum, whereas
-    # the bottom-right point will have the largest sum
-    s = pts.sum(axis = 1)
-    print "np.argmin(pts,1): ",np.argmin(s)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-    
-    # now, compute the difference between the points, the
-    # top-right point will have the smallest difference,
-    # whereas the bottom-left will have the largest difference
-    diff = np.diff(pts)
-    print "diff: ",diff
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
- 
-    # return the ordered coordinates
-    return rect
 
 def main():
     ret, th = filter_image(img)
