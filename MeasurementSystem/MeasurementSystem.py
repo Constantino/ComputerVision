@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-imgPath = "test/test011_1v.jpg"
+imgPath = "test/llave1.jpg"
 img = cv2.imread(imgPath,0)
 imgCopy = cv2.imread(imgPath)
 height, width = img.shape
@@ -199,6 +199,7 @@ def main():
     t = basic_global_thresholding(hist_c)
     print "t_hist: ",t
     contourBoxes = discard_contours(hist_c,contours_array,t)
+    contourBoxes.pop(0)
     print "contour boxes: ",contourBoxes
     
     #cv2.drawContours(imgCopy,contourBoxes,-1,[0,0,255],15)
