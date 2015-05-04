@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-
 global img #= cv2.imread(imgPath,0)
 global imgCopy #= cv2.imread(imgPath)
 global height, width #= img.shape
@@ -160,7 +159,7 @@ def getLimits(box):
             ymin = e[1]
         if e[1] > ymax:
             ymax = e[1]
-    print "xmin,xmax,ymin,ymax: ",xmin,xmax,ymin,ymax
+    #print "xmin,xmax,ymin,ymax: ",xmin,xmax,ymin,ymax
     return xmin,xmax,ymin,ymax
 
 def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
@@ -168,24 +167,75 @@ def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
     coord = coord[0]*scaleW,coord[1]*scaleH
     resultImg = cv2.imread("RESULT.png")
     found = False
-
+    index = -1
+    counter = 0
     for box in contourBoxes:
         xmin,xmax,ymin,ymax = getLimits(box)
         #print "BOX: ",box
         if xmin < coord[0] and ymin < coord[1] and  coord[0] < xmax and coord[1] < ymax :
             #print "coord in box - "
             found = True
+            index = counter
             cv2.drawContours(resultImg,[box],-1,(0,0,255),25)
 
         else:
             #print "coord NOT IN box -"
             cv2.drawContours(resultImg,[box],-1,(255,0,0),25)        
 
+        counter += 1
         print "validation: ",(xmin,ymin)," - ",(xmax,ymax), "coord: ",coord
 
     cv2.imwrite("RESULT.png",resultImg)
 
-    return found
+    return found,index
+
+def Measure(objectIndex,contourBoxes,unit):
+    dist = []
+    box = contourBoxes[objectIndex]
+    dist.append(math.hypot(box[1][0] - box[0][0], box[1][1] - box[0][1])) 
+    dist.append(math.hypot(box[3][0] - box[0][0], box[3][1] - box[0][1]))
+    baseMeasure = 4.0 #cm
+
+    resultImg = cv2.imread("RESULT.png")
+
+    for i in range(len(contourBoxes)):
+        if i != objectIndex or 1 == 1:
+            
+            boxDist = []
+            boxToMeasure = contourBoxes[i]
+            boxDist.append(math.hypot(boxToMeasure[1][0] - boxToMeasure[0][0], boxToMeasure[1][1] - boxToMeasure[0][1])) 
+            boxDist.append(math.hypot(boxToMeasure[3][0] - boxToMeasure[0][0], boxToMeasure[3][1] - boxToMeasure[0][1]))
+
+            
+
+            width = boxDist[0]*baseMeasure/dist[0]
+            height = boxDist[1]*baseMeasure/dist[1]
+
+            label1 = str(float("{0:.1f}".format(height)))
+            label2 = str(float("{0:.1f}".format(width)))
+            
+            if unit == "cm":
+                label = label1 + " X " + label2+" cm"
+            else:
+                if unit == "in":
+                    inches = 0.393700787
+                    label1 = str(float("{0:.1f}".format(height*inches)))
+                    label2 = str(float("{0:.1f}".format(width*inches)))
+                
+                if unit == "mm":
+                    mm = 10
+                    label1 = str(float("{0:.1f}".format(height*mm)))
+                    label2 = str(float("{0:.1f}".format(width*mm)))
+
+                label = label1 + " X "+label2+" "+unit
+
+            labelSize = len(label)*15
+            xmin,xmax,ymin,ymax = getLimits(boxToMeasure)
+            cv2.putText(resultImg,label, (xmin + int(abs(xmax-xmin)/2)-labelSize,ymin+int(abs(ymax-ymin)/2)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,130,255),5)
+
+    cv2.imwrite("RESULT.png",resultImg)
+
+    return 
 
 def FindShapes(ip):
     imgPath = ip
