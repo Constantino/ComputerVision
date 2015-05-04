@@ -195,6 +195,27 @@ def DrawPoint(point,scaleW,scaleH):
     cv2.circle(resultImg,point,20,(0,255,0),15)
     cv2.imwrite("RESULT.png",resultImg)
     
+def MeasureLine(contourBoxes,objectIndex,point1,point2,scaleW,scaleH,unit):
+    resultImg = cv2.imread("RESULT.png")
+
+    box = contourBoxes[objectIndex]
+    boxDist = math.hypot(box[1][0] - box[0][0], box[1][1] - box[0][1])
+    
+    point1 = int(point1[0]*scaleW),int(point1[1]*scaleH)
+    point2 = int(point2[0]*scaleW),int(point2[1]*scaleH)
+    
+    dist = math.hypot(abs(point1[0]-point2[0]),abs(point1[1]-point2[1]))
+    baseMeasure = 4.0#cm
+    inches = 0.393700787
+    distR = (dist*baseMeasure/boxDist)
+    label = str(float("{0:.1f}".format(distR*inches)))
+                    
+    label = label+" in"
+
+    cv2.line(resultImg, (point1), (point2), (0,255,0),10)
+    cv2.putText(resultImg,label,point1, cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,250),5)
+
+    cv2.imwrite("RESULT.png",resultImg)
 
 def Measure(objectIndex,contourBoxes,unit):
     dist = []
