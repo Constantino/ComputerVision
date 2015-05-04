@@ -116,7 +116,7 @@ def draw_corner_points(imgCopy,box,thickness,black):
                         
                         
 
-def get_reference_object(imgCopy,contours):
+def get_reference_objectByColor(imgCopy,contours):
     shape_colors = []
     for e in contours:
         colors = []
@@ -145,6 +145,45 @@ def get_reference_object(imgCopy,contours):
 
     #print "shape index: ",shape_index
 
+def getLimits(box):
+    xmin = box[0][0]
+    xmax = box[0][0]
+    ymin = box[0][1]
+    ymax = box[0][1]
+
+    for e in box:
+        if e[0] < xmin:
+            xmin = e[0]
+        if e[0] > xmax:
+            xmax = e[0]
+        if e[1] < ymin:
+            ymin = e[1]
+        if e[1] > ymax:
+            ymax = e[1]
+    print "xmin,xmax,ymin,ymax: ",xmin,xmax,ymin,ymax
+    return xmin,xmax,ymin,ymax
+
+def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
+    print "coord: ",coord
+    coord = coord[0]*scaleW,coord[1]*scaleH
+    resultImg = cv2.imread("RESULT.png")
+
+    for box in contourBoxes:
+        xmin,xmax,ymin,ymax = getLimits(box)
+        #print "BOX: ",box
+        if xmin < coord[0] and ymin < coord[1] and  coord[0] < xmax and coord[1] < ymax :
+            #print "coord in box - "
+            
+            cv2.drawContours(resultImg,[box],-1,(0,0,255),25)
+
+        else:
+            #print "coord NOT IN box -"
+            cv2.drawContours(resultImg,[box],-1,(255,0,0),25)        
+
+        print "validation: ",(xmin,ymin)," - ",(xmax,ymax), "coord: ",coord
+
+    cv2.imwrite("RESULT.png",resultImg)
+
 def FindShapes(ip):
     imgPath = ip
     img = cv2.imread(imgPath,0)
@@ -172,6 +211,8 @@ def FindShapes(ip):
     draw_bounding_boxes(imgCopy,contourBoxes,15)
 
     cv2.imwrite('RESULT.png',imgCopy)
+
+    return contourBoxes
 
 #main()
 

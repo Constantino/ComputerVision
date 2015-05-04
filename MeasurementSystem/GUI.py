@@ -5,6 +5,9 @@ pygame.init()
 imgPath = "test/test021.jpg"
 image = pygame.image.load(imgPath)
 
+imagerect = image.get_rect()
+realWidth, realHeight = imagerect.size
+
 image = pygame.transform.scale(image,(400,600))
 
 imagerect = image.get_rect()
@@ -23,7 +26,9 @@ btnFindObjects = font.render('Find Shapes',1,(0,0,250))
 btnMeasure = font.render('Measure',1,(0,255,0))
 found = False
 message = font.render('',1,(255,0,0))
-                
+
+global contourBoxes
+
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
@@ -36,7 +41,7 @@ while 1:
                 message = font.render('Select an object as reference',1,(255,0,0))
                 found = True
             
-                FindShapes(imgPath)
+                contourBoxes = FindShapes(imgPath)
 
                 image = pygame.image.load("RESULT.png")
                 image = pygame.transform.scale(image,(400,600))
@@ -49,7 +54,15 @@ while 1:
                 if found:
                     print "Checking if it is an object"
                     message = font.render('Checking if it is an object',1,(255,0,0))
-                
+                    print "w and h ", width,realWidth,height,realHeight
+                    scaleW = (realWidth*1.0)/width
+                    scaleH = (realHeight*1.0)/height
+                    print "scales: ",scaleW,scaleH
+                    getReferenceObject((cordx-panel,cordy-topPanel),contourBoxes,scaleW,scaleH)
+                    
+                    image = pygame.image.load("RESULT.png")
+                    image = pygame.transform.scale(image,(400,600))
+
                 else:
                     print "You must find shapes first"
                     message = font.render('You must find shapes first',1,(255,0,0))                
