@@ -1,8 +1,20 @@
 import sys,pygame
 from MeasurementSystem import *
+from tkFileDialog import *
+
+def loadFile():
+    fname = ""
+    try:
+        fname = askopenfilename(filetypes=(("All files", "*.*"),
+                                           ("PNG", "*.png")))
+
+    except ValueError:
+        print "Please select an image. Try again..."
+
+    return fname
 
 pygame.init()
-imgPath = "test/finalTest/test012.jpg"
+imgPath = loadFile()
 image = pygame.image.load(imgPath)
 
 imagerect = image.get_rect()
