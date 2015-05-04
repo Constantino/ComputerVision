@@ -189,6 +189,13 @@ def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
 
     return found,index
 
+def DrawPoint(point,scaleW,scaleH):
+    point = int(point[0]*scaleW),int(point[1]*scaleH)
+    resultImg = cv2.imread("RESULT.png")
+    cv2.circle(resultImg,point,20,(0,255,0),15)
+    cv2.imwrite("RESULT.png",resultImg)
+    
+
 def Measure(objectIndex,contourBoxes,unit):
     dist = []
     box = contourBoxes[objectIndex]

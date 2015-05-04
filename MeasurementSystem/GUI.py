@@ -39,12 +39,19 @@ btnFindObjects = font.render('Find Objects',1,(0,0,250))
 btnMeasureCm = font.render('Measure (cm)',1,(0,255,0))
 btnMeasureIn = font.render('Measure (in)',1,(0,255,0))
 btnMeasureMm = font.render('Measure (mm)',1,(0,255,0))
+btnMeasureline = font.render('Measure (line)',1,(0,255,0))
 
 found = False
 isReadyToMeasure = False
 message = font.render('',1,(255,0,0))
 isObject = False
 objectIndex = int()
+isWaiting2P = False
+
+scaleW, scaleH = int(),int()
+
+point1, point2 = (0,0)
+counter = 0
 
 global contourBoxes
 
@@ -108,10 +115,27 @@ while 1:
                 else:
                     print "Select an object"
                     message = font.render("Select an object",1,(255,0,0))
-        
+
+            if 0 < cordx < panel and (topPanel*5) < cordy < (topPanel*5+20): #measure line
+                
+                if found and isObject and objectIndex >= 0:
+                    print "objectIndex: ",objectIndex
+                    #MeasureLine(objectIndex,line,"in")
+                    """
+                    image = pygame.image.load("RESULT.png")
+                    image = pygame.transform.scale(image,(scaleWidth,scaleHeight))
+                    """
+                    message = font.render("Select 2 points",1,(255,0,0))
+                    isWaiting2P = True
+                        
+                        
+                else:
+                    print "Select an object"
+                    message = font.render("Select an object as reference",1,(255,0,0))
+                
         
             if panel < cordx < (width+panel) and topPanel < cordy < (height+topPanel):
-                if found:
+                if found and (not isWaiting2P):
                     print "Checking if it is an object"
                     
                     print "w and h ", width,realWidth,height,realHeight
@@ -132,8 +156,28 @@ while 1:
                     image = pygame.transform.scale(image,(400,600))
 
                 else:
-                    print "You must find shapes first"
-                    message = font.render('You must find shapes first',1,(255,0,0))                
+                    if found:
+                        if counter == 0:
+                            point1 = (cordx,cordy)
+                            counter += 1
+                            DrawPoint((point1[0]-panel,point1[1]-topPanel),scaleW,scaleH)
+                
+                        elif counter == 1:
+                            point2 = (cordx,cordy)
+                            DrawPoint((point2[0]-panel,point2[1]-topPanel),scaleW,scaleH)
+                            counter += 1
+
+                        if counter == 2:
+                            counter = 0
+                            print "points: ",point1,point2
+                            isWaiting2P = False
+
+                        image = pygame.image.load("RESULT.png")
+                        image = pygame.transform.scale(image,(scaleWidth,scaleHeight))
+
+                    else:                        
+                        print "You must find shapes first"
+                        message = font.render('You must find shapes first',1,(255,0,0))                
     
 
 
@@ -144,5 +188,6 @@ while 1:
     screen.blit(btnMeasureCm,(0,topPanel*2))
     screen.blit(btnMeasureIn,(0,topPanel*3))
     screen.blit(btnMeasureMm,(0,topPanel*4))
+    screen.blit(btnMeasureIn,(0,topPanel*5))
     
     pygame.display.flip()
