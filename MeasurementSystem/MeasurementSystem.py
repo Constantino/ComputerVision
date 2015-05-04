@@ -167,13 +167,14 @@ def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
     print "coord: ",coord
     coord = coord[0]*scaleW,coord[1]*scaleH
     resultImg = cv2.imread("RESULT.png")
+    found = False
 
     for box in contourBoxes:
         xmin,xmax,ymin,ymax = getLimits(box)
         #print "BOX: ",box
         if xmin < coord[0] and ymin < coord[1] and  coord[0] < xmax and coord[1] < ymax :
             #print "coord in box - "
-            
+            found = True
             cv2.drawContours(resultImg,[box],-1,(0,0,255),25)
 
         else:
@@ -183,6 +184,8 @@ def getReferenceObject(coord,contourBoxes,scaleW,scaleH):
         print "validation: ",(xmin,ymin)," - ",(xmax,ymax), "coord: ",coord
 
     cv2.imwrite("RESULT.png",resultImg)
+
+    return found
 
 def FindShapes(ip):
     imgPath = ip

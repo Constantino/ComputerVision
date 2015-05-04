@@ -22,9 +22,10 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Measurement System")
 font = pygame.font.Font(None, 20)
 
-btnFindObjects = font.render('Find Shapes',1,(0,0,250)) 
+btnFindObjects = font.render('Find Objects',1,(0,0,250)) 
 btnMeasure = font.render('Measure',1,(0,255,0))
 found = False
+isReadyToMeasure = False
 message = font.render('',1,(255,0,0))
 
 global contourBoxes
@@ -48,18 +49,27 @@ while 1:
 
 
             if 0 < cordx < panel and (35+topPanel) < cordy < (55+topPanel):
-                print "btnSelectReference"
+                print "btnMeasure"
+                #if isReadyToMeasure:
+                    
 
             if panel < cordx < (width+panel) and topPanel < cordy < (height+topPanel):
                 if found:
                     print "Checking if it is an object"
-                    message = font.render('Checking if it is an object',1,(255,0,0))
+                    
                     print "w and h ", width,realWidth,height,realHeight
                     scaleW = (realWidth*1.0)/width
                     scaleH = (realHeight*1.0)/height
-                    print "scales: ",scaleW,scaleH
-                    getReferenceObject((cordx-panel,cordy-topPanel),contourBoxes,scaleW,scaleH)
+                    #print "scales: ",scaleW,scaleH
+                    isObject = getReferenceObject((cordx-panel,cordy-topPanel),contourBoxes,scaleW,scaleH)
+                    msgString = ""
+                    if isObject:
+                        msgString = "Object selected"
+                    else:
+                        msgString = "Select an object as reference"
                     
+                    message = font.render(msgString,1,(255,0,0))
+    
                     image = pygame.image.load("RESULT.png")
                     image = pygame.transform.scale(image,(400,600))
 
