@@ -27,6 +27,8 @@ btnMeasure = font.render('Measure',1,(0,255,0))
 found = False
 isReadyToMeasure = False
 message = font.render('',1,(255,0,0))
+isObject = False
+objectIndex = int()
 
 global contourBoxes
 
@@ -49,10 +51,15 @@ while 1:
 
 
             if 0 < cordx < panel and (35+topPanel) < cordy < (55+topPanel):
-                print "btnMeasure"
-                #if isReadyToMeasure:
-                    
-
+                
+                if found and isObject and objectIndex >= 0:
+                    print "objectIndex: ",objectIndex
+                    #Measure(objectIndex)
+                else:
+                    print "Select an object"
+                    message = font.render("Select an object",1,(255,0,0))
+    
+        
             if panel < cordx < (width+panel) and topPanel < cordy < (height+topPanel):
                 if found:
                     print "Checking if it is an object"
@@ -61,8 +68,9 @@ while 1:
                     scaleW = (realWidth*1.0)/width
                     scaleH = (realHeight*1.0)/height
                     #print "scales: ",scaleW,scaleH
-                    isObject = getReferenceObject((cordx-panel,cordy-topPanel),contourBoxes,scaleW,scaleH)
+                    isObject,objectIndex = getReferenceObject((cordx-panel,cordy-topPanel),contourBoxes,scaleW,scaleH)
                     msgString = ""
+
                     if isObject:
                         msgString = "Object selected"
                     else:
