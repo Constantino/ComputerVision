@@ -4,9 +4,9 @@ from matplotlib import pyplot as plt
 from random import choice,randint
 import math
 
-global img #= cv2.imread(imgPath,0)
-global imgCopy #= cv2.imread(imgPath)
-global height, width #= img.shape
+global img
+global imgCopy
+global height, width
 
 def filter_image(img):
     #source: http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_imgproc/py_thresholding/py_thresholding.html#thresholding
@@ -25,7 +25,7 @@ def get_contours(th):
 def get_histogram_contours(contours):
     hist_contours = []
     contours_array = []
-    
+    #I use the area of the bounding box in order to discard them by it later on
     for i in range(len(contours)):
         
         contour = contours[i]
@@ -57,10 +57,11 @@ def basic_global_thresholding(histogram):
         
         T = t_new/2.5
 
-    return T-T*.95
+    return T-T*.95 #After testing this kind of threshold gave me good results
 
 def discard_contours(histogram,contours,T):
     contours_filtered = []
+    #Only those greater than the Threshold will be taken into account
     for i in range(len(contours)):
         if histogram[i] > T:
             contours_filtered.append(contours[i])
@@ -205,7 +206,7 @@ def MeasureLine(contourBoxes,objectIndex,point1,point2,scaleW,scaleH,unit):
     point2 = int(point2[0]*scaleW),int(point2[1]*scaleH)
     
     dist = math.hypot(abs(point1[0]-point2[0]),abs(point1[1]-point2[1]))
-    baseMeasure = 4.0#cm
+    baseMeasure = 4.0#cm ... I already know the measure of my object as reference
     inches = 0.393700787
     distR = (dist*baseMeasure/boxDist)
     label = str(float("{0:.1f}".format(distR*inches)))
@@ -222,7 +223,7 @@ def Measure(objectIndex,contourBoxes,unit):
     box = contourBoxes[objectIndex]
     dist.append(math.hypot(box[1][0] - box[0][0], box[1][1] - box[0][1])) 
     dist.append(math.hypot(box[3][0] - box[0][0], box[3][1] - box[0][1]))
-    baseMeasure = 4.0 #cm
+    baseMeasure = 4.0 #cm ... I already know the measure of my object as reference
 
     resultImg = cv2.imread("RESULT.png")
 
@@ -295,7 +296,6 @@ def FindShapes(ip):
 
     return contourBoxes
 
-#main()
 
 
 

@@ -35,6 +35,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Measurement System")
 font = pygame.font.Font(None, 20)
 
+#Options to display
 btnFindObjects = font.render('Find Objects',1,(0,0,250)) 
 btnMeasureCm = font.render('Measure (cm)',1,(0,255,0))
 btnMeasureIn = font.render('Measure (in)',1,(0,255,0))
@@ -61,7 +62,7 @@ while 1:
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             cordx, cordy  = pygame.mouse.get_pos() 
-            if 0 < cordx < panel and topPanel < cordy < 25+topPanel:
+            if 0 < cordx < panel and topPanel < cordy < 25+topPanel: #Find Shapes
                 print "btnFindObjects"
                 print "Select an object as reference"
                 message = font.render('Select an object as reference',1,(255,0,0))
@@ -129,7 +130,7 @@ while 1:
                     message = font.render("Select an object as reference",1,(255,0,0))
                 
         
-            if panel < cordx < (width+panel) and topPanel < cordy < (height+topPanel):
+            if panel < cordx < (width+panel) and topPanel < cordy < (height+topPanel): #Selecting an object as reference
                 if found and (not isWaiting2P):
                     print "Checking if it is an object"
                     
